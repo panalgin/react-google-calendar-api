@@ -185,10 +185,5 @@ class ApiCalendar {
     }
 }
 
-let apiCalendar;
-try {
-    apiCalendar = new ApiCalendar();
-} catch (e) {
-    console.log(e);
-}
+let apiCalendar = new ApiCalendar();
 export default apiCalendar;
