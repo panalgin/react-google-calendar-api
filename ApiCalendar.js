@@ -1,5 +1,5 @@
 const Config = require("../../apiGoogleconfig.json");
-class ApiCalendar {
+export class ApiCalendar {
     constructor() {
         this.sign = false;
         this.gapi = null;
@@ -175,5 +175,3 @@ class ApiCalendar {
         });
     }
 }
-let apiCalendar = new ApiCalendar();
-export default apiCalendar;

@@ -1,6 +1,8 @@
 const Config = require("../../apiGoogleconfig.json");
 
-class ApiCalendar {
+declare var window: any;
+
+export class ApiCalendar {
     sign: boolean = false;
     gapi: any = null;
     onLoadCallback: any = null;
@@ -151,7 +153,7 @@ class ApiCalendar {
      * @param {string} calendarId
      * @returns {any}
      */
-    public createEventFromNow({time, summary, description = ''}: any, calendarId: string = this.calendar): any {
+    public createEventFromNow({ time, summary, description = '' }: any, calendarId: string = this.calendar): any {
         const event = {
             summary,
             description,
@@ -184,6 +186,3 @@ class ApiCalendar {
         });
     }
 }
-
-let apiCalendar = new ApiCalendar();
-export default apiCalendar;
