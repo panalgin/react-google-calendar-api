@@ -2,7 +2,7 @@ const Config = require("../../apiGoogleconfig.json");
 
 declare var window: any;
 
-export class ApiCalendar {
+class ApiCalendar {
     sign: boolean = false;
     gapi: any = null;
     onLoadCallback: any = null;
@@ -22,6 +22,8 @@ export class ApiCalendar {
             this.setCalendar = this.setCalendar.bind(this);
 
             this.handleClientLoad();
+
+            console.log("Constructor completed");
         } catch (e) {
             console.log(e);
         }
@@ -186,3 +188,6 @@ export class ApiCalendar {
         });
     }
 }
+
+const googleApiService = new ApiCalendar();
+export default googleApiService;
