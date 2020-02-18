@@ -5,6 +5,7 @@
   "main": "./build/ApiCalendar.js",
   "scripts": {
     "build": "tslint --project . && tsc && rm *.test.js",
+    "build-win": "tslint --project . && tsc && del *.test.js",
     "test": "jest",
     "babel": "babel ./ApiCalendar.js -d build"
   },
