@@ -1,5 +1,4 @@
 const Config = require("../../apiGoogleconfig.json");
-
 class ApiCalendar {
     constructor() {
         this.sign = false;
@@ -176,11 +175,5 @@ class ApiCalendar {
         });
     }
 }
-let apiCalendar;
-try {
-    apiCalendar = new ApiCalendar();
-}
-catch (e) {
-    console.log(e);
-}
+let apiCalendar = new ApiCalendar();
 export default apiCalendar;
