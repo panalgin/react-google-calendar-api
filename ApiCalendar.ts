@@ -3,7 +3,7 @@ import Config from "../../apiGoogleconfig.json";
 
 declare var window: any;
 
-export class GoogleCalendarApi {
+class GoogleCalendarApi {
     private static instance: GoogleCalendarApi;
     sign: boolean = false;
     gapi: any = null;
@@ -223,3 +223,6 @@ export class GoogleCalendarApi {
         return result;
     }
 }
+
+const googleApiService = GoogleCalendarApi.getInstance();
+export default googleApiService;

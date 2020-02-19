@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 //@ts-ignore 
 import Config from "../../apiGoogleconfig.json";
-export class GoogleCalendarApi {
+class GoogleCalendarApi {
     constructor() {
         this.sign = false;
         this.gapi = null;
@@ -212,3 +212,5 @@ export class GoogleCalendarApi {
         });
     }
 }
+const googleApiService = GoogleCalendarApi.getInstance();
+export default googleApiService;
