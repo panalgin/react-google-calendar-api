@@ -1,14 +1,16 @@
-const Config = require("../../apiGoogleconfig.json");
+//@ts-ignore 
+import Config from "../../apiGoogleconfig.json";
 
 declare var window: any;
 
-class ApiCalendar {
+export class GoogleCalendarApi {
+    private static instance: GoogleCalendarApi;
     sign: boolean = false;
     gapi: any = null;
     onLoadCallback: any = null;
     calendar: string = 'primary';
 
-    constructor() {
+    protected constructor() {
         try {
             this.updateSigninStatus = this.updateSigninStatus.bind(this);
             this.initClient = this.initClient.bind(this);
@@ -30,11 +32,24 @@ class ApiCalendar {
     }
 
     /**
+     * Gets the singleton instance
+     */
+    public static getInstance(): GoogleCalendarApi {
+        if (!GoogleCalendarApi.instance) {
+            GoogleCalendarApi.instance = new GoogleCalendarApi();
+        }
+
+        return GoogleCalendarApi.instance;
+    }
+
+    /**
      * Update connection status.
      * @param {boolean} isSignedIn
      */
     private updateSigninStatus(isSignedIn: boolean): void {
         this.sign = isSignedIn;
+
+        console.log("IsSignedIn: ", isSignedIn);
     }
 
     /**
@@ -54,7 +69,7 @@ class ApiCalendar {
             })
             .catch((e: any) => {
                 console.log(e);
-            })
+            });
     }
 
     /**
@@ -131,20 +146,32 @@ class ApiCalendar {
      * @param {string} calendarId to see by default use the calendar attribute
      * @returns {any}
      */
-    public listUpcomingEvents(maxResults: number, calendarId: string = this.calendar): any {
+    public async listUpcomingEvents(maxResults: number, calendarId: string = this.calendar): Promise<any> {
+        let result = null;
+
         if (this.gapi) {
-            return this.gapi.client.calendar.events.list({
-                'calendarId': calendarId,
-                'timeMin': (new Date()).toISOString(),
-                'showDeleted': false,
-                'singleEvents': true,
-                'maxResults': maxResults,
-                'orderBy': 'startTime'
+            await this.gapi.client.calendar.events.list({
+                "calendarId": calendarId,
+                "maxResults": maxResults,
+                "orderBy": "updated",
+                "showDeleted": false
             })
+                .then((response: any) => {
+                    // Handle the results here (response.result has the parsed body).
+                    result = response.result;
+                },
+                    (err: any) => {
+                        console.error("Execute error", err);
+
+                        result = "Error: " + err.toString();
+                    });
         } else {
             console.log("Error: this.gapi not loaded");
-            return false;
+
+            result = "Error: Gapi not loaded.";
         }
+
+        return result;
     }
 
     /**
@@ -181,13 +208,18 @@ class ApiCalendar {
      * @param {object} event with start and end dateTime
      * @returns {any}
      */
-    public createEvent(event: object, calendarId: string = this.calendar): any {
-        return this.gapi.client.calendar.events.insert({
+    public async createEvent(event: object, calendarId: string = this.calendar): Promise<any> {
+        let result = "";
+
+        await this.gapi.client.calendar.events.insert({
             'calendarId': calendarId,
             'resource': event,
+        }).then((response: any) => {
+            result = response.result;
+        }, (err: any) => {
+            result = err.toString();
         });
+
+        return result;
     }
 }
-
-const googleApiService = new ApiCalendar();
-export default googleApiService;
