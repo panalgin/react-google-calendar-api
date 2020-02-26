@@ -49,6 +49,8 @@ var GoogleCalendarApi = function () {
         this.onLoadCallback = null;
         this.calendar = 'primary';
         try {
+            this.Calendars = new CalendarManager();
+            this.Events = new EventManager();
             this.updateSigninStatus = this.updateSigninStatus.bind(this);
             this.initClient = this.initClient.bind(this);
             this.handleSignoutClick = this.handleSignoutClick.bind(this);
@@ -67,6 +69,7 @@ var GoogleCalendarApi = function () {
     }
     /**
      * Gets the singleton instance
+     * @returns GoogleCalendarApi::instance
      */
 
 
