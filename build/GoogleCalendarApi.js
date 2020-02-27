@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
@@ -6,11 +6,9 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _apiGoogleconfig = require("../../apiGoogleconfig.json");
+var _CalendarManager = require('./CalendarManager');
 
-var _apiGoogleconfig2 = _interopRequireDefault(_apiGoogleconfig);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _EventManager = require('./EventManager');
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -38,19 +36,26 @@ var __awaiter = undefined && undefined.__awaiter || function (thisArg, _argument
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-//@ts-ignore 
+
+//@ts-ignore
+var Config = {
+    "clientId": "754982713370-oe0jco1hr4vn7ni8545v010280tij7h7.apps.googleusercontent.com",
+    "apiKey": "AIzaSyBCnV4bldtQSqnpbfxQN1YZLQQoGAICsg0",
+    "scope": "https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.events.readonly https://www.googleapis.com/auth/calendar.settings.readonly",
+    "discoveryDocs": ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"]
+};
 
 var GoogleCalendarApi = function () {
     function GoogleCalendarApi() {
         _classCallCheck(this, GoogleCalendarApi);
 
+        this.Calendars = new _CalendarManager.CalendarManager();
+        this.Events = new _EventManager.EventManager();
         this.sign = false;
         this.gapi = null;
         this.onLoadCallback = null;
         this.calendar = 'primary';
         try {
-            this.Calendars = new CalendarManager();
-            this.Events = new EventManager();
             this.updateSigninStatus = this.updateSigninStatus.bind(this);
             this.initClient = this.initClient.bind(this);
             this.handleSignoutClick = this.handleSignoutClick.bind(this);
@@ -62,7 +67,7 @@ var GoogleCalendarApi = function () {
             this.onLoad = this.onLoad.bind(this);
             this.setCalendar = this.setCalendar.bind(this);
             this.handleClientLoad();
-            console.log("Constructor completed");
+            console.log("Ctor called");
         } catch (e) {
             console.log(e);
         }
@@ -74,7 +79,7 @@ var GoogleCalendarApi = function () {
 
 
     _createClass(GoogleCalendarApi, [{
-        key: "updateSigninStatus",
+        key: 'updateSigninStatus',
 
         /**
          * Update connection status.
@@ -89,12 +94,13 @@ var GoogleCalendarApi = function () {
          */
 
     }, {
-        key: "initClient",
+        key: 'initClient',
         value: function initClient() {
             var _this = this;
 
             this.gapi = window['gapi'];
-            this.gapi.client.init(_apiGoogleconfig2.default).then(function () {
+            console.log("Gapi set");
+            this.gapi.client.init(Config).then(function () {
                 // Listen for sign-in state changes.
                 _this.gapi.auth2.getAuthInstance().isSignedIn.listen(_this.updateSigninStatus);
                 // Handle the initial sign-in state.
@@ -102,6 +108,7 @@ var GoogleCalendarApi = function () {
                 if (_this.onLoadCallback) {
                     _this.onLoadCallback();
                 }
+                console.log("OnLoadCallback called");
             }).catch(function (e) {
                 console.log(e);
             });
@@ -112,7 +119,7 @@ var GoogleCalendarApi = function () {
          */
 
     }, {
-        key: "handleClientLoad",
+        key: 'handleClientLoad',
         value: function handleClientLoad() {
             var _this2 = this;
 
@@ -120,8 +127,11 @@ var GoogleCalendarApi = function () {
             var script = document.createElement("script");
             script.src = "https://apis.google.com/js/api.js";
             document.body.appendChild(script);
+            console.log("Gapi script being injected");
             script.onload = function () {
+                console.log("Gapi script being injected222");
                 window['gapi'].load('client:auth2', _this2.initClient);
+                console.log("Gapi script injected");
             };
         }
         /**
@@ -129,7 +139,7 @@ var GoogleCalendarApi = function () {
          */
 
     }, {
-        key: "handleAuthClick",
+        key: 'handleAuthClick',
         value: function handleAuthClick() {
             if (this.gapi) {
                 this.gapi.auth2.getAuthInstance().signIn();
@@ -143,7 +153,7 @@ var GoogleCalendarApi = function () {
          */
 
     }, {
-        key: "setCalendar",
+        key: 'setCalendar',
         value: function setCalendar(newCalendar) {
             this.calendar = newCalendar;
         }
@@ -153,7 +163,7 @@ var GoogleCalendarApi = function () {
          */
 
     }, {
-        key: "listenSign",
+        key: 'listenSign',
         value: function listenSign(callback) {
             if (this.gapi) {
                 this.gapi.auth2.getAuthInstance().isSignedIn.listen(callback);
@@ -167,10 +177,14 @@ var GoogleCalendarApi = function () {
          */
 
     }, {
-        key: "onLoad",
+        key: 'onLoad',
         value: function onLoad(callback) {
             if (this.gapi) {
                 callback();
+                // Set subclasses gapi instance
+                console.log("OnLoaded: Setting subclasses gapi instance");
+                this.Calendars.Gapi = this.gapi;
+                this.Events.Gapi = this.gapi;
             } else {
                 this.onLoadCallback = callback;
             }
@@ -180,7 +194,7 @@ var GoogleCalendarApi = function () {
          */
 
     }, {
-        key: "handleSignoutClick",
+        key: 'handleSignoutClick',
         value: function handleSignoutClick() {
             if (this.gapi) {
                 this.gapi.auth2.getAuthInstance().signOut();
@@ -196,7 +210,7 @@ var GoogleCalendarApi = function () {
          */
 
     }, {
-        key: "listUpcomingEvents",
+        key: 'listUpcomingEvents',
         value: function listUpcomingEvents(maxResults) {
             var calendarId = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.calendar;
 
@@ -236,10 +250,10 @@ var GoogleCalendarApi = function () {
                                 result = "Error: Gapi not loaded.";
 
                             case 8:
-                                return _context.abrupt("return", result);
+                                return _context.abrupt('return', result);
 
                             case 9:
-                            case "end":
+                            case 'end':
                                 return _context.stop();
                         }
                     }
@@ -256,7 +270,7 @@ var GoogleCalendarApi = function () {
          */
 
     }, {
-        key: "createEventFromNow",
+        key: 'createEventFromNow',
         value: function createEventFromNow(_ref) {
             var time = _ref.time,
                 summary = _ref.summary,
@@ -289,7 +303,7 @@ var GoogleCalendarApi = function () {
          */
 
     }, {
-        key: "createEvent",
+        key: 'createEvent',
         value: function createEvent(event) {
             var calendarId = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.calendar;
 
@@ -311,10 +325,10 @@ var GoogleCalendarApi = function () {
                                 });
 
                             case 3:
-                                return _context2.abrupt("return", result);
+                                return _context2.abrupt('return', result);
 
                             case 4:
-                            case "end":
+                            case 'end':
                                 return _context2.stop();
                         }
                     }
@@ -322,7 +336,7 @@ var GoogleCalendarApi = function () {
             }));
         }
     }], [{
-        key: "getInstance",
+        key: 'getInstance',
         value: function getInstance() {
             if (!GoogleCalendarApi.instance) {
                 GoogleCalendarApi.instance = new GoogleCalendarApi();

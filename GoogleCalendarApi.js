@@ -6,17 +6,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-//@ts-ignore 
-import Config from "../../apiGoogleconfig.json";
+import { CalendarManager } from './CalendarManager';
+import { EventManager } from './EventManager';
+//@ts-ignore
+let Config = {
+    "clientId": "754982713370-oe0jco1hr4vn7ni8545v010280tij7h7.apps.googleusercontent.com",
+    "apiKey": "AIzaSyBCnV4bldtQSqnpbfxQN1YZLQQoGAICsg0",
+    "scope": "https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.events.readonly https://www.googleapis.com/auth/calendar.settings.readonly",
+    "discoveryDocs": [
+        "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"
+    ]
+};
 class GoogleCalendarApi {
     constructor() {
+        this.Calendars = new CalendarManager();
+        this.Events = new EventManager();
         this.sign = false;
         this.gapi = null;
         this.onLoadCallback = null;
         this.calendar = 'primary';
         try {
-            this.Calendars = new CalendarManager();
-            this.Events = new EventManager();
             this.updateSigninStatus = this.updateSigninStatus.bind(this);
             this.initClient = this.initClient.bind(this);
             this.handleSignoutClick = this.handleSignoutClick.bind(this);
@@ -28,7 +37,7 @@ class GoogleCalendarApi {
             this.onLoad = this.onLoad.bind(this);
             this.setCalendar = this.setCalendar.bind(this);
             this.handleClientLoad();
-            console.log("Constructor completed");
+            console.log("Ctor called");
         }
         catch (e) {
             console.log(e);
@@ -57,6 +66,7 @@ class GoogleCalendarApi {
      */
     initClient() {
         this.gapi = window['gapi'];
+        console.log("Gapi set");
         this.gapi.client.init(Config)
             .then(() => {
             // Listen for sign-in state changes.
@@ -66,6 +76,7 @@ class GoogleCalendarApi {
             if (this.onLoadCallback) {
                 this.onLoadCallback();
             }
+            console.log("OnLoadCallback called");
         })
             .catch((e) => {
             console.log(e);
@@ -80,8 +91,11 @@ class GoogleCalendarApi {
         const script = document.createElement("script");
         script.src = "https://apis.google.com/js/api.js";
         document.body.appendChild(script);
+        console.log("Gapi script being injected");
         script.onload = () => {
+            console.log("Gapi script being injected222");
             window['gapi'].load('client:auth2', this.initClient);
+            console.log("Gapi script injected");
         };
     }
     /**
@@ -121,6 +135,10 @@ class GoogleCalendarApi {
     onLoad(callback) {
         if (this.gapi) {
             callback();
+            // Set subclasses gapi instance
+            console.log("OnLoaded: Setting subclasses gapi instance");
+            this.Calendars.Gapi = this.gapi;
+            this.Events.Gapi = this.gapi;
         }
         else {
             this.onLoadCallback = callback;

@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tslint --project . && tsc && rm *.test.js",
     "build-win": "tslint --project . && tsc && del *.test.js",
-    "test": "jest",
+    "test": "jest --verbose",
     "babel": "babel ./GoogleCalendarApi.js -d build"
   },
   "jest": {

@@ -1,5 +1,6 @@
-class EventManager {
+export class EventManager {
     constructor() {
+        this.Gapi = null;
     }
     /**
      * Deletes an event.

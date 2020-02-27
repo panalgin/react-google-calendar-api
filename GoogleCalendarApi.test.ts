@@ -1,8 +1,11 @@
-declare var test: any;
-
-import GoogleCalendarApi from './build/GoogleCalendarApi';
+import googleApiService from "./GoogleCalendarApi";
 
 test('setCalendar method', () => {
-    GoogleCalendarApi.setCalendar('test-calendar');
-    expect(GoogleCalendarApi.calendar).toBe('test-calendar');
+    googleApiService.setCalendar('test-calendar');
+    expect(googleApiService.calendar).toBe('test-calendar');
+});
+
+test("Actual initialization", () => {
+    console.log("Gapi: ", googleApiService.gapi);
+    expect(googleApiService.gapi).toBeDefined;
 });
